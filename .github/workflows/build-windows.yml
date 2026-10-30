@@ -1,4 +1,3 @@
-
 name: Build Windows EXE
 
 on:
@@ -10,12 +9,11 @@ on:
 jobs:
   build-windows:
     runs-on: windows-latest
-
     steps:
-      - name: Checkout source
+      - name: Check out source
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -25,13 +23,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Build EXE
+      - name: Build standalone EXE (include PyMuPDF resources)
         run: |
-          pyinstaller --noconfirm --clean --onefile --windowed --name Flipkart_Splitter flipkart_splitter.py
+          pyinstaller --noconfirm --clean --onefile --windowed --name Flipkart_Splitter --collect-all pymupdf --collect-all fitz flipkart_splitter.py
 
-      - name: Upload EXE
+      - name: Upload EXE artifact
         uses: actions/upload-artifact@v4
         with:
           name: Flipkart_Splitter_Windows_EXE
           path: dist/Flipkart_Splitter.exe
+          if-no-files-found: error
           retention-days: 30
